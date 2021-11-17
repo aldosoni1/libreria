@@ -1,4 +1,5 @@
 using Api.Configurations;
+using Application;
 using Domain.Models.Repositories;
 using Infraestructure;
 using Infraestructure.Repository;
@@ -27,7 +28,8 @@ namespace Api
 
             services.AddControllers();
             services.AddConfigurationDba(Configuration);
-            services.AddScoped<ILibroRepository, Libro2Repository>();
+            services.AddScoped<ILibroRepository, LibroRepository>();
+            services.AddScoped<ILibroService, LibroService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });

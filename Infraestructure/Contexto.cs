@@ -11,7 +11,7 @@ namespace Infraestructure
 {
     public class Contexto : DbContext
     {
-        
+        public DbSet<Libro> Libros { get; set; }
         public Contexto(DbContextOptions<Contexto> options)
         : base(options)
         {
