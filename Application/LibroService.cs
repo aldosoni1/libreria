@@ -31,9 +31,10 @@ namespace Application
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<LibroViewModel>> GetAll(string searchValue = null, int skip = 0, int take = 10)
+        public async Task<IEnumerable<LibroViewModel>> GetAll(string searchValue = null, int skip = 0, int take = 10)
         {
-            throw new NotImplementedException();
+            var data = await _repository.GetLibros(searchValue, skip, take);
+            return data.Select(x => new LibroViewModel(x.Id, x.Nombre, x.Autor, x.NumeroPaginas));
         }
 
         public Task<LibroViewModel> GetById(Guid id)
