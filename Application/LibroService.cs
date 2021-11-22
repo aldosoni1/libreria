@@ -1,6 +1,7 @@
 ﻿using Application.InputModel;
 using Application.ViewModel;
 using Domain.Models.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +19,11 @@ namespace Application
         }
         public async Task<LibroViewModel> Actualizar(LibroEditInputModel editInputModel)
         {
-            var data = await _repository.GetById(editInputModel.Id);
+            var data = await _repository.GetRepositoryAsync(editInputModel.Id);
             data.Nombre = editInputModel.Nombre;
             data.NumeroPaginas = editInputModel.NumeroHojas;
             data.Autor = editInputModel.Autor;
-            await _repository.Actualizar(data);
+            await _repository.Update(data);
             return new LibroViewModel(data.Id,data.Nombre,data.Autor,data.NumeroPaginas);
         }
 
@@ -33,13 +34,18 @@ namespace Application
 
         public async Task<IEnumerable<LibroViewModel>> GetAll(string searchValue = null, int skip = 0, int take = 10)
         {
-            var data = await _repository.GetLibros(searchValue, skip, take);
+            var query = _repository.GetAllQueryableRepository();
+
+            if (!string.IsNullOrWhiteSpace(searchValue))
+                query = query.Where(x => x.Nombre.Contains(searchValue));
+            var data = await query.Skip(skip).Take(take).ToListAsync();
             return data.Select(x => new LibroViewModel(x.Id, x.Nombre, x.Autor, x.NumeroPaginas));
         }
 
-        public Task<LibroViewModel> GetById(Guid id)
+        public async Task<LibroViewModel> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            var data = await _repository.GetRepositoryAsync(id);
+            return new LibroViewModel(data.Id,data.Nombre,data.Autor,data.NumeroPaginas);
         }
 
         public Task<Guid> Registrar(LibroInputModel libroInputModel)
