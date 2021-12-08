@@ -17,6 +17,7 @@ namespace Infraestructure.Configurations
             builder.HasKey(x=>x.Id);
             builder.Property(x => x.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
             builder.HasMany(x => x.Librerias).WithOne(x => x.Libro).HasForeignKey(x=>x.IdBook);
+            builder.HasQueryFilter(libro => EF.Property<bool>(libro, nameof(libro.Eliminado)) == false);
         }
     }
 }

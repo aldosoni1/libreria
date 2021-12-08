@@ -1,3 +1,18 @@
-<div *ngFor="let libro of this.libros">
-    {{ libro.nombre}}
+<div class="container" style="background-color: black;">
+  <!-- <dx-data-grid keyExpr="id" [dataSource]="this.store" [remoteOperations]="true" [paging]="{enabled:true, pageIndex:0,pageSize:30}"#dataGridVar>
+    <dxo-editing
+      mode="popup"
+      [allowUpdating]="true"
+      [allowAdding]="true"
+      [allowDeleting]="true"
+    >
+    </dxo-editing>
+    <dxi-column dataField="nombre" alignment="center"></dxi-column>
+    <dxi-column dataField="autor" alignment="center"></dxi-column>
+    <dxi-column
+      dataField="noPaginas"
+      alignment="center"
+    ></dxi-column>
+  </dx-data-grid> -->
+<dx-select-box [dataSource]="this.store" displayExpr="nombre" valueExpr="id" displayValue="id" [searchEnabled]="true" [value]="this.idLibro"></dx-select-box>
 </div>

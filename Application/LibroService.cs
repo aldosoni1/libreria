@@ -1,7 +1,9 @@
 ﻿using Application.InputModel;
 using Application.ViewModel;
+using Domain.Models;
 using Domain.Models.Repositories;
 using Microsoft.EntityFrameworkCore;
+using PJENL.Shared.Kernel.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,33 +26,37 @@ namespace Application
             data.NumeroPaginas = editInputModel.NumeroHojas;
             data.Autor = editInputModel.Autor;
             await _repository.Update(data);
-            return new LibroViewModel(data.Id,data.Nombre,data.Autor,data.NumeroPaginas);
+            return new LibroViewModel(data.Id, data.Nombre, data.Autor, data.NumeroPaginas);
         }
 
-        public Task<Guid> Eliminar(Guid id)
+        public async Task<bool> Eliminar(Guid id)
         {
-            throw new NotImplementedException();
+            return await _repository.RemoveByIdRepositoryAsync(id);
         }
 
-        public async Task<IEnumerable<LibroViewModel>> GetAll(string searchValue = null, int skip = 0, int take = 10)
+        public async Task<GridResponse<IEnumerable<LibroViewModel>, LibroViewModel>> GetAll(string searchValue = null, int skip = 0, int take = 10)
         {
             var query = _repository.GetAllQueryableRepository();
 
             if (!string.IsNullOrWhiteSpace(searchValue))
                 query = query.Where(x => x.Nombre.Contains(searchValue));
             var data = await query.Skip(skip).Take(take).ToListAsync();
-            return data.Select(x => new LibroViewModel(x.Id, x.Nombre, x.Autor, x.NumeroPaginas));
+            var totalCount = await _repository.GetAllQueryableRepository().CountAsync();
+            return new GridResponse<IEnumerable<LibroViewModel>, LibroViewModel>(data.Select(x => new LibroViewModel(x.Id, x.Nombre, x.Autor, x.NumeroPaginas)).ToList(), totalCount);
         }
 
         public async Task<LibroViewModel> GetById(Guid id)
         {
             var data = await _repository.GetRepositoryAsync(id);
-            return new LibroViewModel(data.Id,data.Nombre,data.Autor,data.NumeroPaginas);
+            if (data is null) throw new Exception($"No se encuentra el registro con el id {id}");
+            return new LibroViewModel(data.Id, data.Nombre, data.Autor, data.NumeroPaginas);
         }
 
-        public Task<Guid> Registrar(LibroInputModel libroInputModel)
+        public async Task<Guid> Registrar(LibroInputModel libroInputModel)
         {
-            throw new NotImplementedException();
+            var data = new Libro { Autor = libroInputModel.Autor, Nombre = libroInputModel.Nombre, NumeroPaginas = libroInputModel.CantidadHojas };
+            var data2 = await _repository.AddRepositoryAsync(data);
+            return data2.Id;
         }
     }
 }

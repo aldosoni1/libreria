@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PJENL.Shared.Kernel.Configurations.Configurations;
+using PJENL.Shared.Kernel.Middleware;
 
 namespace Api
 {
@@ -57,7 +58,7 @@ namespace Api
 
             app.UseAuthorization();
             app.UseConfigurationCors();
-
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
