@@ -5,6 +5,7 @@ using Domain.Exceptions;
 using Domain.Models;
 using Domain.Models.Repositories;
 using Infraestructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LibroController : ControllerBase

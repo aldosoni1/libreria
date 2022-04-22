@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PJENL.Shared.Kernel.Configurations.Configurations;
 using PJENL.Shared.Kernel.Middleware;
+using PJENLShared.Kernel.Auth;
+using PJENLShared.Kernel.Auth.ExternalServices;
 
 namespace Api
 {
@@ -28,6 +30,13 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddConfigurationAuth(Configuration);
+            services.AddSingleton<IConfiguration>(provider => Configuration);
+            services.AddHttpContextAccessor();
+            services.AddScoped<IAuthService, AuthService>();
+
+            services.AddScoped<IHubService, HubService>();
+            services.AddScoped<IUserInfoService, UserInfoService>();
 
             services.AddControllers();
             services.AddConfigurationDba(Configuration);
@@ -35,11 +44,13 @@ namespace Api
             services.AddScoped<ILibreriaRepository, LibreriaRepository>();
             services.AddScoped<ILibroService, LibroService>();
             services.AddScoped<ILibreriaService, LibreriaService>();
+           
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
             });
-            services.AddConfigurationCors();
+            
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +66,7 @@ namespace Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseConfigurationAuth();
             app.UseAuthorization();
             app.UseConfigurationCors();
             app.UseMiddleware<ErrorHandlingMiddleware>();
